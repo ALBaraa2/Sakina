@@ -1,26 +1,21 @@
 <?php
 
+// database/factories/TherapistFactory.php
+
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Therapist>
- */
 class TherapistFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'user_id'        => \App\Models\User::factory(), // automatically relates to a user
-            'specialization' => $this->faker->randomElement(['Psychologist', 'Counselor', 'Therapist']),
-            'bio'            => $this->faker->sentence(),
-            'cv'             => null,
+            'user_id' => User::factory()->therapist(),
+            'specialization' => $this->faker->randomElement(['CBT', 'Psychiatry', 'Family Therapy']),
+            'bio' => $this->faker->paragraph,
+            'cv' => null, // assume null for testing
         ];
     }
 }

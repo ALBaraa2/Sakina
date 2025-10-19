@@ -1,26 +1,23 @@
 <?php
 
+// database/factories/AppointmentFactory.php
+
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Therapist;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Appointment>
- */
 class AppointmentFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'patient_id'      => \App\Models\User::factory(),
-            'therapist_id'    => \App\Models\Therapist::factory(),
-            'appointment_date'=> $this->faker->dateTimeBetween('now', '+30 days'),
-            'status'          => $this->faker->randomElement(['pending', 'confirmed', 'completed', 'canceled']),
+            'patient_id' => User::factory()->state(['role' => 'patient']),
+            'therapist_id' => Therapist::factory(),
+            'appointment_date' => $this->faker->dateTimeBetween('-1 week', '+1 week'),
+            'status' => $this->faker->randomElement(['pending', 'confirmed', 'completed', 'canceled']),
         ];
     }
 }
+

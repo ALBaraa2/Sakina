@@ -45,6 +45,10 @@ class AuthController extends Controller
             ]);
         }
 
+        if (! $user->is_verified) {
+            return response()->json(['message' => 'Account not verified. Please wait for the admin to approve your account and verify it before logging in.'], 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json(['user' => $user, 'token' => $token]);
