@@ -1,8 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TherapistController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AppointmentSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API works!']);
 });
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/logout',   [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::apiResource('users', UserController::class);
+Route::apiResource('therapists', TherapistController::class);
+Route::apiResource('appointments', AppointmentController::class);
+Route::apiResource('appointment-sessions', AppointmentSessionController::class);
