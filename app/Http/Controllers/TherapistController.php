@@ -76,7 +76,11 @@ class TherapistController extends Controller
      */
     public function destroy(Therapist $therapist)
     {
-        //
+        $userId = $therapist->user->id;
+        $therapist->delete();
+        $user = User::find($userId)->delete();
+
+        return response()->json(['message' => 'Therapist and associated user deleted successfully.']);
     }
 
     public function verifyTherapist(Request $request, Therapist $therapist)
