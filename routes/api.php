@@ -18,3 +18,5 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('therapists', TherapistController::class);
 Route::apiResource('appointments', AppointmentController::class);
 Route::apiResource('appointment-sessions', AppointmentSessionController::class);
+
+Route::post('/therapists/{therapist}/verify', [TherapistController::class, 'verifyTherapist'])->middleware('auth:sanctum');

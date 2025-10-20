@@ -78,4 +78,12 @@ class TherapistController extends Controller
     {
         //
     }
+
+    public function verifyTherapist(Request $request, Therapist $therapist)
+    {
+        $therapist->user->is_verified = true;
+        $therapist->user->save();
+
+        return response()->json(['message' => 'Therapist verified successfully.']);
+    }
 }
