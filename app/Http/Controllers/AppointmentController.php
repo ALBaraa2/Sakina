@@ -54,6 +54,10 @@ class AppointmentController extends Controller
      */
     public function destroy(Appointment $appointment)
     {
-        //
+        $appointment->status = 'canceled';
+        $appointment->save();
+        $appointment->delete();
+
+        return response()->json(['message' => 'Appointment canceled successfully.'], 200);
     }
 }
