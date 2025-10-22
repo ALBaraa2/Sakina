@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AppointmentResource;
 use Illuminate\Http\Request;
+use App\Models\Appointment;
 
 class AppointmentController extends Controller
 {
@@ -11,7 +13,7 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        //
+        return AppointmentResource::collection(Appointment::paginate(10));
     }
 
     /**
@@ -25,15 +27,15 @@ class AppointmentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Appointment $appointment)
     {
-        //
+        return new AppointmentResource($appointment);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Appointment $appointment)
     {
         //
     }
@@ -41,7 +43,7 @@ class AppointmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Appointment $appointment)
     {
         //
     }
