@@ -29,27 +29,9 @@ class TherapistController extends Controller
         ]);
 
         $therapist = DB::transaction(function () use ($validated, $request) {
-            // $user = User::create([
-            //     'name'     => $validated['name'],
-            //     'email'    => $validated['email'],
-            //     'password' => bcrypt($validated['password']),
-            //     'role'     => 'therapist',
-            //     'phone'    => $validated['phone'] ?? null,
-            //     'photo'    => $validated['photo'] ?? null,
-            //     'is_verified' => false,
-            // ]);
 
             $authController = new AuthController();
-            $registrationRequest = new Request([
-                'name'     => $request->input('name'),
-                'email'    => $request->input('email'),
-                'password' => $request->input('password'),
-                'password_confirmation' => $request->input('password_confirmation'),
-                'role'     => 'therapist',
-                'phone'    => $request->input('phone'),
-                'photo'    => $request->input('photo'),
-            ]);
-            $authResponse = $authController->register($registrationRequest);
+            $authResponse = $authController->register(new Request(array_merge($request->all(), ['role' => 'therapist'])));
             $user = $authResponse->resource;
 
             $therapistModel = $user->therapist()->create($validated);
