@@ -21,7 +21,16 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:users,id',
+            'therapist_id' => 'required|exists:therapists,id',
+            'appointment_date' => 'required|date',
+            'status' => 'required|in:pending,confirmed,completed,canceled',
+        ]);
+
+        $appointment = Appointment::create($validated);
+
+        return new AppointmentResource($appointment);
     }
 
     /**
