@@ -24,30 +24,35 @@ class TherapistController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'           => 'required|string|max:255',
-            'email'          => 'required|email|unique:users,email',
-            'password'       => 'required|string|min:8|confirmed',
-            'phone'          => 'nullable|string|max:20',
-            'photo'          => 'nullable|string|max:255',
-            'cv'             => 'nullable|string|max:255',
+            'cv'             => 'required|string|url|max:255',
             'specialization' => 'required|string|max:255',
         ]);
 
-        $therapist = DB::transaction(function () use ($validated) {
-            $user = User::create([
-                'name'     => $validated['name'],
-                'email'    => $validated['email'],
-                'password' => bcrypt($validated['password']),
-                'role'     => 'therapist',
-                'phone'    => $validated['phone'] ?? null,
-                'photo'    => $validated['photo'] ?? null,
-                'is_verified' => false,
-            ]);
+        $therapist = DB::transaction(function () use ($validated, $request) {
+            // $user = User::create([
+            //     'name'     => $validated['name'],
+            //     'email'    => $validated['email'],
+            //     'password' => bcrypt($validated['password']),
+            //     'role'     => 'therapist',
+            //     'phone'    => $validated['phone'] ?? null,
+            //     'photo'    => $validated['photo'] ?? null,
+            //     'is_verified' => false,
+            // ]);
 
-            $therapistModel = $user->therapist()->create([
-                'cv'             => $validated['cv'] ?? null,
-                'specialization' => $validated['specialization'],
+            $authController = new AuthController();
+            $registrationRequest = new Request([
+                'name'     => $request->input('name'),
+                'email'    => $request->input('email'),
+                'password' => $request->input('password'),
+                'password_confirmation' => $request->input('password_confirmation'),
+                'role'     => 'therapist',
+                'phone'    => $request->input('phone'),
+                'photo'    => $request->input('photo'),
             ]);
+            $authResponse = $authController->register($registrationRequest);
+            $user = $authResponse->resource;
+
+            $therapistModel = $user->therapist()->create($validated);
 
             return $therapistModel;
         });
@@ -83,11 +88,11 @@ class TherapistController extends Controller
         return response()->json(['message' => 'Therapist and associated user deleted successfully.']);
     }
 
-    public function verifyTherapist(Request $request, Therapist $therapist)
+    public function approveTherapist(Request $request, Therapist $therapist)
     {
         $therapist->user->is_verified = true;
         $therapist->user->save();
 
-        return response()->json(['message' => 'Therapist verified successfully.']);
+        return response()->json(['message' => 'Therapist approved successfully.']);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Resources\AuthResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -12,21 +13,20 @@ class AuthController extends Controller
     // Register
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|string|confirmed|min:8',
+            'role' => 'in:patient,therapist',
+            'phone' => 'nullable|string|max:20',
+            'photo' => 'nullable|string|max:255',
         ]);
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+        $user = User::create($validated);
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        return new AuthResource($user)->additional(['token' => $token], 201);
     }
 
     // Login
@@ -45,13 +45,13 @@ class AuthController extends Controller
             ]);
         }
 
-        if (! $user->is_verified) {
+        if ($user->role == 'therapist' && !$user->is_verified) {
             return response()->json(['message' => 'Account not verified. Please wait for the admin to approve your account and verify it before logging in.'], 403);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json(['user' => $user, 'token' => $token]);
+        return new AuthResource($user)->additional(['token' => $token]);
     }
 
     // Logout
