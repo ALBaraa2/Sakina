@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AppointmentSession;
 use App\Http\Resources\AppointmentSessionResource;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentSessionController extends Controller
 {
@@ -21,7 +22,24 @@ class AppointmentSessionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'appointment_id'   => 'required|exists:appointments,id',
+            'session_note'    => 'required|string',
+            'session_duration'=> 'required|integer',
+            'prescription'    => 'nullable|string',
+        ]);
+
+        $appointmentSession = DB::transaction(function () use ($validated) {
+
+            $appointmentSession = AppointmentSession::create($validated);
+
+            $appointmentSession->appointment->status = 'completed';
+            $appointmentSession->appointment->save();
+
+            return $appointmentSession;
+        });
+
+        return new AppointmentSessionResource($appointmentSession);
     }
 
     /**
