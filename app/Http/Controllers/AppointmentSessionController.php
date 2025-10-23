@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AppointmentSession;
+use App\Http\Resources\AppointmentSessionResource;
 
 class AppointmentSessionController extends Controller
 {
@@ -11,7 +13,7 @@ class AppointmentSessionController extends Controller
      */
     public function index()
     {
-        //
+        return AppointmentSessionResource::collection(AppointmentSession::paginate(10));
     }
 
     /**
