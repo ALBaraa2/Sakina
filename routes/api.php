@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', function () {
     return response()->json(['message' => 'API works!']);
 })->middleware('auth:sanctum');
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 Route::post('/logout',   [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('users', UserController::class);
-Route::apiResource('therapists', TherapistController::class);
-Route::apiResource('appointments', AppointmentController::class);
-Route::apiResource('appointment-sessions', AppointmentSessionController::class);
+Route::apiResource('therapists', TherapistController::class)->middleware('auth:sanctum')->except(['index', 'show', 'store']);
+Route::apiResource('therapists', TherapistController::class)->only(['index', 'show', 'store']);
+Route::apiResource('appointments', AppointmentController::class)->middleware('auth:sanctum');
+Route::apiResource('appointment-sessions', AppointmentSessionController::class)->middleware('auth:sanctum');
 
-Route::post('/therapists/{therapist}/approve', [TherapistController::class, 'approveTherapist'])->middleware('auth:sanctum');
+Route::post('/therapists/{therapist}/approve', [TherapistController::class, 'approveTherapist'])->middleware(['auth:sanctum', 'can:approve,therapist']);
 Route::delete('/appointment-sessions/{id}/hardDelete', [AppointmentSessionController::class, 'hardDelete']);

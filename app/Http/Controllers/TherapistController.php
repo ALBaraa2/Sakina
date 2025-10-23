@@ -7,9 +7,15 @@ use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TherapistController extends Controller
 {
+    use AuthorizesRequests;
+    public function __construct()
+    {
+        $this->authorizeResource(Therapist::class, 'therapist');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -65,13 +71,15 @@ class TherapistController extends Controller
     {
         $userId = $therapist->user->id;
         $therapist->delete();
-        $user = User::find($userId)->delete();
+        User::find($userId)->delete();
 
         return response()->json(['message' => 'Therapist and associated user deleted successfully.']);
     }
 
     public function approveTherapist(Request $request, Therapist $therapist)
     {
+        $this->authorize('approve', $therapist);
+
         $therapist->user->is_verified = true;
         $therapist->user->save();
 
