@@ -16,7 +16,7 @@ class AppointmentSessionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'appointment' => new AppointmentResource($this->whenLoaded('appointment')),
+            'appointment' => new AppointmentResource($this->appointment),
             'session_note' => $this->session_note,
             'session_duration' => $this->session_duration,
             'prescription' => $this->prescription,

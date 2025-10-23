@@ -27,15 +27,15 @@ class AppointmentSessionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(AppointmentSession $appointmentSession)
     {
-        //
+        return new AppointmentSessionResource($appointmentSession);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, AppointmentSession $appointmentSession)
     {
         //
     }
@@ -43,7 +43,7 @@ class AppointmentSessionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(AppointmentSession $appointmentSession)
     {
         //
     }
