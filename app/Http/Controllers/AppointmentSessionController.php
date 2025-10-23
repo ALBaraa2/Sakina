@@ -63,6 +63,16 @@ class AppointmentSessionController extends Controller
      */
     public function destroy(AppointmentSession $appointmentSession)
     {
-        //
+        $appointmentSession->delete();
+
+        return response()->json(['message' => 'Session soft deleted.'], 200);
+    }
+
+    public function hardDelete(string $id)
+    {
+        $appointmentSession = AppointmentSession::withTrashed()->findOrFail($id);
+        $appointmentSession->forceDelete();
+
+        return response()->json(['message' => 'Session permanently deleted'], 200);
     }
 }
