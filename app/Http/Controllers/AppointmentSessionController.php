@@ -12,9 +12,27 @@ class AppointmentSessionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AppointmentSessionResource::collection(AppointmentSession::paginate(10));
+        $query = AppointmentSession::query();
+        $user = $request->user();
+
+        if ($user->role === 'patient') {
+            $query->whereHas('appointment', function ($q) use ($user) {
+                $q->where('patient_id', $user->id);
+            });
+        } elseif ($user->role === 'therapist') {
+            $therapist = $user->therapist;
+            $query->whereHas('appointment', function ($q) use ($therapist) {
+                $q->where('therapist_id', $therapist->id);
+            });
+        }
+
+        if ($request->has('appointment_id')) {
+            $query->where('appointment_id', $request->input('appointment_id'));
+        }
+
+        return AppointmentSessionResource::collection($query->paginate(10));
     }
 
     /**

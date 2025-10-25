@@ -21,18 +21,16 @@ class AppointmentController extends Controller
     {
         $from = $request->query('from');
         $to = $request->query('to');
-        $user = request()->user();
+        $user = $request->user();
         $query = Appointment::query();
 
         if ($user->role === 'admin') {
-            $appointments = $query->get();
+            $query->get();
         } elseif ($user->role === 'patient') {
-            $appointments = $query->where('patient_id', $user->id);
+            $query->where('patient_id', $user->id);
         } elseif ($user->role === 'therapist') {
             $therapist = $user->therapist;
-            $appointments = $query->where('therapist_id', $therapist->id);
-        } else {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            $query->where('therapist_id', $therapist->id);
         }
 
         if ($from) {
@@ -43,9 +41,7 @@ class AppointmentController extends Controller
             $query->where('appointment_date', '<=', $to);
         }
 
-        $appointments = $query->paginate(10);
-
-        return AppointmentResource::collection($appointments);
+        return AppointmentResource::collection($query->paginate(10));
     }
 
     /**
