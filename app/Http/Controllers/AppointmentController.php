@@ -8,12 +8,30 @@ use App\Models\Appointment;
 
 class AppointmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Appointment::class, 'appointment');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return AppointmentResource::collection(Appointment::paginate(10));
+        $user = request()->user();
+
+        if ($user->role === 'admin') {
+            $appointments = AppointmentResource::collection(Appointment::paginate(10));
+        } elseif ($user->role === 'patient') {
+            $appointments = AppointmentResource::collection(Appointment::where('patient_id', $user->id)->paginate(10));
+        } elseif ($user->role === 'therapist') {
+            $therapist = $user->therapist;
+            $appointments = AppointmentResource::collection(Appointment::where('therapist_id', $therapist->id)->paginate(10));
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return $appointments;
     }
 
     /**
@@ -22,12 +40,12 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id' => 'required|exists:users,id',
             'therapist_id' => 'required|exists:therapists,id',
             'appointment_date' => 'required|date',
-            'status' => 'required|in:pending,confirmed,completed,canceled',
         ]);
 
+        $validated['patient_id'] = $request->user()->id;
+        $validated['status'] = 'pending';
         $appointment = Appointment::create($validated);
 
         return new AppointmentResource($appointment);
