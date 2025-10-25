@@ -20,9 +20,23 @@ class TherapistController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TherapistResource::collection(Therapist::paginate(10));
+        $query = Therapist::query();
+
+        if ($request->has('specialization')) {
+            $query->where('specialization', $request->input('specialization'));
+        }
+
+        if ($request->has('name')) {
+            $name = $request->input('name');
+            $query->whereHas('user', function ($q) use ($name) {
+                $q->where('name', 'like', '%' . $name . '%');
+            });
+
+        }
+
+        return TherapistResource::collection($query->paginate(10));
     }
 
     /**
