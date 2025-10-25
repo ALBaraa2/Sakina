@@ -14,6 +14,7 @@ class TherapistController extends Controller
     use AuthorizesRequests;
     public function __construct()
     {
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'store']);
         $this->authorizeResource(Therapist::class, 'therapist');
     }
     /**

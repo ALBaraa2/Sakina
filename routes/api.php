@@ -16,8 +16,7 @@ Route::post('/login',    [AuthController::class, 'login']);
 Route::post('/logout',   [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::apiResource('users', UserController::class);
-Route::apiResource('therapists', TherapistController::class)->middleware('auth:sanctum')->except(['index', 'show', 'store']);
-Route::apiResource('therapists', TherapistController::class)->only(['index', 'show', 'store']);
+Route::apiResource('therapists', TherapistController::class);
 Route::apiResource('appointments', AppointmentController::class)->middleware('auth:sanctum');
 Route::apiResource('appointment-sessions', AppointmentSessionController::class)->middleware('auth:sanctum');
 
