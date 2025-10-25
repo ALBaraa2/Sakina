@@ -10,28 +10,42 @@ class AppointmentController extends Controller
 {
     public function __construct()
     {
+        $this->middleware('auth:sanctum');
         $this->authorizeResource(Appointment::class, 'appointment');
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $from = $request->query('from');
+        $to = $request->query('to');
         $user = request()->user();
+        $query = Appointment::query();
 
         if ($user->role === 'admin') {
-            $appointments = AppointmentResource::collection(Appointment::paginate(10));
+            $appointments = $query->get();
         } elseif ($user->role === 'patient') {
-            $appointments = AppointmentResource::collection(Appointment::where('patient_id', $user->id)->paginate(10));
+            $appointments = $query->where('patient_id', $user->id);
         } elseif ($user->role === 'therapist') {
             $therapist = $user->therapist;
-            $appointments = AppointmentResource::collection(Appointment::where('therapist_id', $therapist->id)->paginate(10));
+            $appointments = $query->where('therapist_id', $therapist->id);
         } else {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return $appointments;
+        if ($from) {
+            $query->where('appointment_date', '>=', $from);
+        }
+
+        if ($to) {
+            $query->where('appointment_date', '<=', $to);
+        }
+
+        $appointments = $query->paginate(10);
+
+        return AppointmentResource::collection($appointments);
     }
 
     /**
@@ -77,5 +91,15 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         return response()->json(['message' => 'Appointment canceled successfully.'], 200);
+    }
+
+    public function confirmAppointment(Appointment $appointment)
+    {
+        $this->authorize('confirm', $appointment);
+
+        $appointment->status = 'confirmed';
+        $appointment->save();
+
+        return response()->json(['message' => 'Appointment confirmed successfully.'], 200);
     }
 }

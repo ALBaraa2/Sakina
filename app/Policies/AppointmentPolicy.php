@@ -63,4 +63,9 @@ class AppointmentPolicy
     {
         return false;
     }
+
+    public function confirm(User $user, Appointment $appointment): bool
+    {
+        return $user->role === 'therapist' && $user->id === $appointment->therapist->user_id;
+    }
 }
