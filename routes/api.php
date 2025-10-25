@@ -18,7 +18,7 @@ Route::post('/logout',   [AuthController::class, 'logout'])->middleware('auth:sa
 Route::apiResource('users', UserController::class);
 Route::apiResource('therapists', TherapistController::class);
 Route::apiResource('appointments', AppointmentController::class);
-Route::apiResource('appointment-sessions', AppointmentSessionController::class)->middleware('auth:sanctum');
+Route::apiResource('appointment-sessions', AppointmentSessionController::class);
 
 Route::post('/therapists/{therapist}/approve', [TherapistController::class, 'approveTherapist'])->middleware(['auth:sanctum', 'can:approve,therapist']);
 Route::delete('/appointment-sessions/{id}/hardDelete', [AppointmentSessionController::class, 'hardDelete']);

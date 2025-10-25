@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\DB;
 
 class AppointmentSessionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->authorizeResource(AppointmentSession::class, 'appointment_session');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -88,6 +94,8 @@ class AppointmentSessionController extends Controller
 
     public function hardDelete(string $id)
     {
+        $this->authorize('forceDelete', AppointmentSession::class);
+
         $appointmentSession = AppointmentSession::withTrashed()->findOrFail($id);
         $appointmentSession->forceDelete();
 

@@ -21,7 +21,7 @@ class AppointmentSessionPolicy
      */
     public function view(User $user, AppointmentSession $appointmentSession): bool
     {
-        return false;
+        return $user->role === 'admin' || $user->id === $appointmentSession->appointment->patient_id || $user->id === $appointmentSession->appointment->therapist->user_id;
     }
 
     /**
@@ -29,7 +29,7 @@ class AppointmentSessionPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->role === 'therapist';
     }
 
     /**
@@ -45,7 +45,7 @@ class AppointmentSessionPolicy
      */
     public function delete(User $user, AppointmentSession $appointmentSession): bool
     {
-        return false;
+        return $user->role === 'therapist' && $user->id === $appointmentSession->appointment->therapist->user_id || $user->role === 'admin';
     }
 
     /**
@@ -61,6 +61,6 @@ class AppointmentSessionPolicy
      */
     public function forceDelete(User $user, AppointmentSession $appointmentSession): bool
     {
-        return false;
+        return $user->role === 'admin';
     }
 }
