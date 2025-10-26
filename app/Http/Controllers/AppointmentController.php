@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AppointmentResource;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreAppointmentRequest;
 use App\Models\Appointment;
 
 class AppointmentController extends Controller
@@ -55,20 +56,23 @@ class AppointmentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAppointmentRequest $request)
     {
-        $validated = $request->validate([
-            'therapist_id' => 'required|exists:therapists,id',
-            'appointment_date' => 'required|date|after:now',
-        ]);
+        $validated = $request->validated();
 
         $validated['patient_id'] = $request->user()->id;
         $validated['status'] = 'pending';
 
-        $exists = Appointment::where('therapist_id', $validated['therapist_id'])
-        ->where('appointment_date', $validated['appointment_date'])
-        ->where('status', '!=', 'canceled')
-        ->exists();
+        $date   = \Carbon\Carbon::parse($validated['appointment_date']);
+        $hour   = $date->format('H');
+        $minute = $date->format('i');
+
+        $exists = \App\Models\Appointment::where('therapist_id', $validated['therapist_id'])
+            ->whereRaw('EXTRACT(HOUR FROM appointment_date) = ?', [$hour])
+            ->whereRaw('EXTRACT(MINUTE FROM appointment_date) = ?', [$minute])
+            ->whereDate('appointment_date', $date->toDateString())
+            ->where('status', '!=', 'canceled')
+            ->exists();
 
         if ($exists) {
             return response()->json(['message' => 'There is already an appointment at this time for this therapist, please choose another time.'], 422);
