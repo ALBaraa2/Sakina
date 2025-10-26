@@ -37,7 +37,7 @@ class AppointmentPolicy
      */
     public function update(User $user, Appointment $appointment): bool
     {
-        return false;
+        return $user->role === 'patient' && $user->id === $appointment->patient_id;
     }
 
     /**

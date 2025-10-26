@@ -98,4 +98,19 @@ class AppointmentController extends Controller
 
         return response()->json(['message' => 'Appointment confirmed successfully.'], 200);
     }
+
+    public function rescheduleAppointment(Request $request, Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+
+        $validated = $request->validate([
+            'appointment_date' => 'required|date',
+        ]);
+
+        $appointment->appointment_date = $validated['appointment_date'];
+        $appointment->status = 'rescheduled';
+        $appointment->save();
+
+        return response()->json(['message' => 'Appointment rescheduled successfully.'], 200);
+    }
 }

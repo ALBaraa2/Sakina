@@ -23,3 +23,4 @@ Route::apiResource('appointment-sessions', AppointmentSessionController::class);
 Route::post('/therapists/{therapist}/approve', [TherapistController::class, 'approveTherapist'])->middleware(['auth:sanctum', 'can:approve,therapist']);
 Route::delete('/appointment-sessions/{id}/hardDelete', [AppointmentSessionController::class, 'hardDelete']);
 Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirmAppointment']);
+Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'rescheduleAppointment']);
