@@ -41,6 +41,14 @@ class AppointmentController extends Controller
             $query->where('appointment_date', '<=', $to);
         }
 
+        if ($request->has('status')) {
+            if ($request->query('status') === 'canceled') {
+                $query->onlyTrashed();
+            } else {
+                $query->where('status', $request->query('status'));
+            }
+        }
+
         return AppointmentResource::collection($query->paginate(10));
     }
 
