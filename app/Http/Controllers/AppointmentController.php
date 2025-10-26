@@ -66,6 +66,8 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
+        $appointment->load('patient', 'therapist.user', 'session');
+
         return new AppointmentResource($appointment);
     }
 
