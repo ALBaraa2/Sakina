@@ -79,7 +79,15 @@ class AppointmentSessionController extends Controller
      */
     public function update(Request $request, AppointmentSession $appointmentSession)
     {
-        //
+        $validated = $request->validate([
+            'session_note'    => 'sometimes|required|string',
+            'session_duration'=> 'sometimes|required|integer',
+            'prescription'    => 'nullable|string',
+        ]);
+
+        $appointmentSession->update($validated);
+
+        return new AppointmentSessionResource($appointmentSession);
     }
 
     /**
