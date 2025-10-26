@@ -59,11 +59,21 @@ class AppointmentController extends Controller
     {
         $validated = $request->validate([
             'therapist_id' => 'required|exists:therapists,id',
-            'appointment_date' => 'required|date',
+            'appointment_date' => 'required|date|after:now',
         ]);
 
         $validated['patient_id'] = $request->user()->id;
         $validated['status'] = 'pending';
+
+        $exists = Appointment::where('therapist_id', $validated['therapist_id'])
+        ->where('appointment_date', $validated['appointment_date'])
+        ->where('status', '!=', 'canceled')
+        ->exists();
+
+        if ($exists) {
+            return response()->json(['message' => 'There is already an appointment at this time for this therapist, please choose another time.'], 422);
+        }
+
         $appointment = Appointment::create($validated);
 
         return new AppointmentResource($appointment);

@@ -45,7 +45,17 @@ class AppointmentPolicy
      */
     public function delete(User $user, Appointment $appointment): bool
     {
-        return $user->role === 'admin' || $user->id === $appointment->patient_id || $user->id === $appointment->therapist->user_id;
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'patient' && $user->id === $appointment->patient_id) {
+            $now = now();
+            $appointmentTime = \Carbon\Carbon::parse($appointment->appointment_date);
+            return $appointmentTime->isFuture() && $appointmentTime->diffInHours($now) >= 12;
+        }
+
+        return false;
     }
 
     /**
