@@ -9,7 +9,7 @@ This repository contains the **Backend (API)** built with **Laravel**, providing
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/ALBaraa2/sakina.git](https://github.com/ALBaraa2/Sakina.git)
+git clone https://github.com/ALBaraa2/sakina.git
 ```
 
 ### 2. Install dependencies
