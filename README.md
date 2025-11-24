@@ -1,9 +1,5 @@
 # Sakina – Mental Health Clinic Backend
 
-<p align="center">
-  <img src="https://imgur.com/AX55kbo.png" width="250" />
-</p>
-
 Sakina is a digital platform designed to help people easily find qualified and verified mental health professionals.  
 Users can explore therapist profiles, check their specialties, and book appointments smoothly.  
 This repository contains the **Backend (API)** built with **Laravel**, providing a secure and scalable system for the platform.
